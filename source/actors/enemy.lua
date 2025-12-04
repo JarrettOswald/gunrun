@@ -1,5 +1,6 @@
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+local geom <const> = playdate.geometry
 
 Enemy = {}
 
@@ -50,7 +51,7 @@ function Enemy:update()
         local enemyX, enemyY = self.x, self.y
 
         local dx, dy = playerX - enemyX, playerY - enemyY
-        local distance = math.sqrt(dx * dx + dy * dy)
+        local distance = geom.distanceToPoint(enemyX, enemyY, playerX, playerY)
 
         if distance > 0 then
             dx, dy = dx / distance, dy / distance

@@ -1,49 +1,49 @@
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+local geom <const> = playdate.geometry
 
+local SPEED <const> = 5
 
 Bullet = {}
 class('Bullet').extends(gfx.sprite)
 
-function Bullet:init(player, target)
-    self.player = player
-    self.target = target
-    self.speed = 5
+local function initImage(self)
     local image = gfx.image.new(4, 4)
     gfx.pushContext(image)
     gfx.fillCircleAtPoint(2, 2, 2)
     gfx.popContext()
-    self:moveTo(player.x, player.y)
     self:setImage(image)
+end
+
+local function handleBulletPath(self)
+    self.distanceToTarget = self.distanceToTarget + SPEED
+    if self.target == nil then
+        self:remove()
+    end
+
+
+    local pointOnLine = self.lineToTarget:pointOnLine(self.distanceToTarget)
+    self:moveTo(pointOnLine.x, pointOnLine.y)
+
+    local current_distance = geom.distanceToPoint(self.x, self.y, self.target.x, self.target.y)
+
+    if current_distance < 5 or self.distanceToTarget >= self.lineToTarget:length() then
+        self:remove()
+        self.target:damage(25)
+    end
+end
+
+function Bullet:init(player, target)
+    self.player = player
+    self.target = target
+    self.lineToTarget = geom.lineSegment.new(player.x, player.y, target.x, target.y)
+    self.distanceToTarget = 0
+
+    initImage(self)
+    self:moveTo(player.x, player.y)
     self:add()
 end
 
 function Bullet:update()
-    if self.target then
-        if not self.vx or not self.vy then
-            local dx = self.target.x - self.x
-            local dy = self.target.y - self.y
-            local distance = math.sqrt(dx * dx + dy * dy)
-
-            if distance > 0 then
-                self.vx = (dx / distance) * self.speed
-                self.vy = (dy / distance) * self.speed
-            else
-                self.vx = 0
-                self.vy = 0
-            end
-        end
-        self:moveTo(self.x + self.vx, self.y + self.vy)
-
-        local current_dx = self.target.x - self.x
-        local current_dy = self.target.y - self.y
-        local current_distance = math.sqrt(current_dx * current_dx + current_dy * current_dy)
-
-        if current_distance < 5 or (self.vx * current_dx + self.vy * current_dy) <= 0 then
-            self:remove()
-            self.target:damage(25)
-        end
-    else
-        self:remove()
-    end
+    handleBulletPath(self)
 end

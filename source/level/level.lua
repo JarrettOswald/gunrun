@@ -1,5 +1,6 @@
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
+local geom <const> = playdate.geometry
 
 Level = {}
 
@@ -52,7 +53,8 @@ function Level:controlEnemy()
 
             local dx = enemyB.x - enemyA.x
             local dy = enemyB.y - enemyA.y
-            local distance = math.sqrt(dx * dx + dy * dy)
+
+            local distance = geom.distanceToPoint(enemyA.x, enemyA.y, enemyB.x, enemyB.y)
 
             if distance < 20 and distance > 0 then
                 local overlap = 20 - distance
