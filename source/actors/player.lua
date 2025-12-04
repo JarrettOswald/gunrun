@@ -1,6 +1,7 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local math <const> = math
+local geom <const> = pd.geometry
 
 Player = {}
 
@@ -18,18 +19,15 @@ function Player:init()
     self.gun = Gun(self)
     self.shield = Shield()
     self.targetIsSelect = false
-    self.selectEnemy = {}
+    self.selectEnemy = nil
+    self.lastEnemySearchTime = 0
+    self.enemySearchInterval = 200
 
     local image = gfx.image.new('image/player')
     self:setImage(image)
 
     self:moveTo(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     self:add()
-end
-
-local function rotationSprite(self, angle)
-    local scaleX = (angle > 0 and angle < 180) and -1 or 1
-    self:setScale(scaleX, 1)
 end
 
 local function run(self, angle)
@@ -43,6 +41,9 @@ local function run(self, angle)
 
     newX = math.max(PLAYER_WIDTH / 2, math.min(SCREEN_WIDTH - PLAYER_WIDTH / 2, newX))
     newY = math.max(PLAYER_HEIGHT / 2, math.min(SCREEN_HEIGHT - PLAYER_HEIGHT / 2, newY))
+
+    local scaleX = (angle > 0 and angle < 180) and -1 or 1
+    self:setScale(scaleX, 1)
 
     self:moveTo(newX, newY)
 end
@@ -66,26 +67,69 @@ local function findEnemies(self)
     return enimies
 end
 
-local function aimEnemies(self, enimies)
-    if #enimies > 0 and not self.targetIsSelect then
-        self.selectEnemy = enimies[math.random(1, #enimies)]
+local function getClosestEnemy(self, enemies)
+    local closest = nil
+    local minDist = math.huge
+
+    for _, enemy in ipairs(enemies) do
+        local dist = geom.distanceToPoint(self.x, self.y, enemy.x, enemy.y)
+        if dist < minDist then
+            minDist = dist
+            closest = enemy
+        end
     end
+    return closest
+end
+
+local function handleFocus(self)
+    if self.selectEnemy then
+        local disToTarget = geom.distanceToPoint(self.x, self.y, self.selectEnemy.x, self.selectEnemy.y)
+
+        if self.selectEnemy.health <= 0 or disToTarget > SEARCH_RADIUS then
+            self.selectEnemy = nil
+            self.targetIsSelect = false
+            self.lastEnemySearchTime = 0
+        end
+    end
+end
+
+local function selectClosestTarget(self)
+    local now = pd.getCurrentTimeMilliseconds()
+
+    if not self.selectEnemy and (now - self.lastEnemySearchTime >= self.enemySearchInterval) then
+        local enemies = findEnemies(self)
+        self.lastEnemySearchTime = now
+
+        if #enemies > 0 then
+            self.selectEnemy = getClosestEnemy(self, enemies)
+            self.targetIsSelect = true
+        end
+    end
+end
+
+local function handleInput(self)
+    if pd.buttonJustPressed(pd.kButtonLeft) then
+        self.shield:up()
+    end
+end
+
+local function fire(self)
+    if self.selectEnemy then
+        self.gun:fire(self.selectEnemy)
+    end
+end
+
+local function moveShield(self)
+    self.shield:moveTo(self.x, self.y)
 end
 
 function Player:update()
     local angle = pd.getCrankPosition()
 
-    rotationSprite(self, angle)
     run(self, angle)
-    local enimies = findEnemies(self)
-
-    aimEnemies(self, enimies)
-
-    self.shield:moveTo(self.x, self.y)
-
-    if pd.buttonJustPressed(pd.kButtonLeft) then
-        self.shield:up()
-    end
-
-    print(self.selectEnemy.number)
+    handleFocus(self)
+    selectClosestTarget(self)
+    handleInput(self)
+    moveShield(self)
+    fire(self)
 end
