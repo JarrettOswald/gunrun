@@ -24,7 +24,6 @@ function Enemy:init(x, y, player)
     self.number = math.random(1, 999999)
     self.health = 100
     self.player = player
-    self.speed = MOVE_SPEED
 
     self:setImage(createEnemyImage())
     self:setCollideRect(0, 0, ENEMY_WIDTH, ENEMY_HEIGHT)
@@ -34,7 +33,7 @@ function Enemy:init(x, y, player)
 end
 
 function Enemy:damage(damageAmount)
-    self:setImageDrawMode(gfx.kColorXOR)
+    self:setImageDrawMode(gfx.kDrawModeXOR)
     pd.timer.performAfterDelay(20, function()
         self:setImageDrawMode(gfx.kDrawModeCopy)
     end)
@@ -55,7 +54,7 @@ function Enemy:update()
 
         if distance > 0 then
             dx, dy = dx / distance, dy / distance
-            self:moveTo(enemyX + dx * self.speed, enemyY + dy * self.speed)
+            self:moveTo(enemyX + dx * MOVE_SPEED, enemyY + dy * MOVE_SPEED)
         end
     end
 end
