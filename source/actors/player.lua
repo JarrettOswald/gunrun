@@ -17,10 +17,12 @@ function Player:init()
     self.lastFireTime = 0
     self.gun = Gun(self)
     self.shield = Shield()
-    
+    self.targetIsSelect = false
+    self.selectEnemy = {}
+
     local image = gfx.image.new('image/player')
     self:setImage(image)
-    
+
     self:moveTo(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     self:add()
 end
@@ -45,7 +47,9 @@ local function run(self, angle)
     self:moveTo(newX, newY)
 end
 
-local function findAndAimEnemies(self)
+local function findEnemies(self)
+    local enimies = {}
+
     local sprites = gfx.sprite.querySpritesInRect(
         self.x - SEARCH_RADIUS,
         self.y - SEARCH_RADIUS,
@@ -55,9 +59,16 @@ local function findAndAimEnemies(self)
 
     for _, sprite in ipairs(sprites) do
         if sprite:getTag() == TAGS.EMENY then
-            self.gun:fire(sprite)
-            break
+            table.insert(enimies, sprite)
         end
+    end
+
+    return enimies
+end
+
+local function aimEnemies(self, enimies)
+    if #enimies > 0 and not self.targetIsSelect then
+        self.selectEnemy = enimies[math.random(1, #enimies)]
     end
 end
 
@@ -66,11 +77,15 @@ function Player:update()
 
     rotationSprite(self, angle)
     run(self, angle)
-    findAndAimEnemies(self)
+    local enimies = findEnemies(self)
+
+    aimEnemies(self, enimies)
 
     self.shield:moveTo(self.x, self.y)
 
     if pd.buttonJustPressed(pd.kButtonLeft) then
         self.shield:up()
     end
+
+    print(self.selectEnemy.number)
 end

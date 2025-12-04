@@ -20,6 +20,7 @@ local function createEnemyImage()
 end
 
 function Enemy:init(x, y, player)
+    self.number = math.random(1, 999999)
     self.health = 100
     self.player = player
     self.speed = MOVE_SPEED
