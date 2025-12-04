@@ -12,7 +12,7 @@ function Level:init()
     Enemy(400 / 4 * 2, 120, self.player)
     Enemy(400 / 4 * 3, 120, self.player)
     self.lastSpawnTime = 10
-    self.spawnInterval = 2000
+    self.spawnInterval = 500
     self.enemyCount = 0
 
     self:add()
@@ -23,8 +23,11 @@ function Level:spawnEnemy()
         return
     end
 
+    local arc = geom.arc.new(200, 120, 120, 0, 360)
+    print(arc:length())
+    local point = arc:pointOnArc(math.random(0, math.floor(arc:length())))
     if self.lastSpawnTime + self.spawnInterval < pd.getCurrentTimeMilliseconds() then
-        Enemy(math.random(0,400), 260, self.player)
+        Enemy(point.x, point.y, self.player)
         self.lastSpawnTime = pd.getCurrentTimeMilliseconds()
     end
 end

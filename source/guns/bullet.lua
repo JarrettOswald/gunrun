@@ -21,7 +21,6 @@ local function handleBulletPath(self)
         self:remove()
     end
 
-
     local pointOnLine = self.lineToTarget:pointOnLine(self.distanceToTarget)
     self:moveTo(pointOnLine.x, pointOnLine.y)
 
@@ -29,7 +28,7 @@ local function handleBulletPath(self)
 
     if current_distance < 5 or self.distanceToTarget >= self.lineToTarget:length() then
         self:remove()
-        self.target:damage(25)
+        self.target:damage(50)
     end
 end
 
