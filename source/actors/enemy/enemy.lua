@@ -20,6 +20,21 @@ local function createEnemyImage()
     return image
 end
 
+local function goToActor(self)
+    if self.player then
+        local playerX, playerY = self.player.x, self.player.y
+        local enemyX, enemyY = self.x, self.y
+
+        local distance = geom.distanceToPoint(enemyX, enemyY, playerX, playerY)
+
+        if distance > 0 then
+            local dx, dy = playerX - enemyX, playerY - enemyY
+            dx, dy = dx / distance, dy / distance
+            self:moveTo(enemyX + dx * MOVE_SPEED, enemyY + dy * MOVE_SPEED)
+        end
+    end
+end
+
 function Enemy:init(x, y, player)
     self.number = math.random(1, 999999)
     self.health = 100
@@ -45,16 +60,5 @@ function Enemy:damage(damageAmount)
 end
 
 function Enemy:update()
-    if self.player then
-        local playerX, playerY = self.player.x, self.player.y
-        local enemyX, enemyY = self.x, self.y
-
-        local dx, dy = playerX - enemyX, playerY - enemyY
-        local distance = geom.distanceToPoint(enemyX, enemyY, playerX, playerY)
-
-        if distance > 0 then
-            dx, dy = dx / distance, dy / distance
-            self:moveTo(enemyX + dx * MOVE_SPEED, enemyY + dy * MOVE_SPEED)
-        end
-    end
+    goToActor(self)
 end
