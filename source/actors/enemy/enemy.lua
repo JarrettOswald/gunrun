@@ -6,19 +6,11 @@ Enemy = {}
 
 class("Enemy").extends(gfx.sprite)
 
-local ENEMY_WIDTH <const> = 15
-local ENEMY_HEIGHT <const> = 15
+local ENEMY_WIDTH <const> = 16
+local ENEMY_HEIGHT <const> = 16
 local MOVE_SPEED <const> = 2
 
-local function createEnemyImage()
-    local image = gfx.image.new(ENEMY_WIDTH, ENEMY_HEIGHT)
-    gfx.pushContext(image)
-    gfx.fillRect(0, 0, ENEMY_WIDTH, ENEMY_HEIGHT)
-    gfx.setColor(gfx.kColorWhite)
-    gfx.fillRect(3, 3, ENEMY_WIDTH - 6, ENEMY_HEIGHT - 6)
-    gfx.popContext()
-    return image
-end
+local enemyTable = gfx.imagetable.new("image/enemy/enemy") or error("nil imagetable")
 
 local function goToActor(self)
     if self.player then
@@ -40,7 +32,7 @@ function Enemy:init(x, y, player)
     self.health = 100
     self.player = player
 
-    self:setImage(createEnemyImage())
+    self:setImage(enemyTable:getImage(1))enemyTable:getImage(1)
     self:setCollideRect(0, 0, ENEMY_WIDTH, ENEMY_HEIGHT)
     self:setTag(TAGS.EMENY)
     self:moveTo(x, y)
@@ -48,7 +40,7 @@ function Enemy:init(x, y, player)
 end
 
 function Enemy:damage(damageAmount)
-    self:setImageDrawMode(gfx.kDrawModeXOR)
+    self:setImageDrawMode(gfx.kDrawModeInverted)
     pd.timer.performAfterDelay(20, function()
         self:setImageDrawMode(gfx.kDrawModeCopy)
     end)

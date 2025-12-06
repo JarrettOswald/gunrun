@@ -44,10 +44,7 @@ local function run(self, angle)
 
     rotationSprite(self, angle)
 
-    local clampedX = math.min(math.max(PLAYER_WIDTH / 2, point.x), SCREEN_WIDTH - PLAYER_WIDTH / 2)
-    local clampedY = math.min(math.max(PLAYER_HEIGHT / 2, point.y), SCREEN_HEIGHT - PLAYER_HEIGHT / 2)
-
-    self:moveTo(clampedX, clampedY)
+    self:moveTo(point.x, point.y)
 end
 
 local function findEnemies(self)

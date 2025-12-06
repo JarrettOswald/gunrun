@@ -10,14 +10,25 @@ function CashEnemy:init(player)
     self.player = player
     self.cashEnemy = {}
     self.enemyCount = 0
-    
+    self.counterSptrite = gfx.sprite.new()
+
     self:add()
+end
+
+local function displayCountEnemy(self)
+    local imgage = gfx.image.new(100, 20)
+    gfx.pushContext(imgage)
+    gfx.drawText("Enemies: " .. tostring(self.enemyCount), 5, 5)
+    gfx.popContext()
+    self.counterSptrite:setImage(imgage)
+    self.counterSptrite:moveTo(50, 50)
+    self.counterSptrite:setZIndex(1000)
+    self.counterSptrite:add()
 end
 
 function CashEnemy:getEnemy(x, y)
     return Enemy(x, y, self.player)
 end
-
 
 function CashEnemy:controlEnemy()
     local sprites = gfx.sprite.getAllSprites()
@@ -58,5 +69,6 @@ function CashEnemy:getCountEnemy()
 end
 
 function CashEnemy:update()
+    displayCountEnemy(self)
     self:controlEnemy()
 end

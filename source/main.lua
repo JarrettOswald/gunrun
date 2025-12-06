@@ -7,21 +7,22 @@ import "actors/player"
 import "level/level"
 import "actors/enemy/enemy"
 import "actors/enemy/cashEnemy"
-import "config"
 import "guns/bullet"
 import "guns/gun"
 import "shields/shield"
 import "level/camera"
+import "config/config"
+import "config/sceneManager"
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
-local lvl = Level()
+SCENE_MANAGER = SceneManager()
+
+SCENE_MANAGER:switchScene(Level)
 
 function pd.update()
     gfx.sprite.update()
     pd.timer.updateTimers()
-
-    local fps = pd.getFPS()
-    gfx.drawText("FPS: " .. fps, 5, 5)
+    pd.drawFPS(0, 0)
 end

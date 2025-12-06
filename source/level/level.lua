@@ -8,18 +8,55 @@ class('Level').extends(gfx.sprite)
 
 local arc = geom.arc.new(200, 120, 120, 0, 360)
 
+local assetsTable = gfx.imagetable.new("image/level/assets") or error("nil imagetable")
+local LVL_HEIGHT = 800
+local LVL_WIDTH = 600
+
 function Level:init()
     self.player = Player()
     self.cashEnemy = CashEnemy(self.player)
     self.lastSpawnTime = 10
-    self.spawnInterval = 500
+    self.spawnInterval = 200
     self.camera = Camera(self.player)
-
     self:add()
 
-    local image = gfx.image.new('image/level/background') or error("Failed to load image")
-    self:setImage(image)
     gfx.setBackgroundColor(gfx.kColorBlack)
+    gfx.clear()
+
+    local image = assetsTable:getImage(1, 2) or error("Failed to load image")
+    local backgroundImage = gfx.image.new(LVL_WIDTH, LVL_HEIGHT)
+
+    gfx.pushContext(backgroundImage)
+    
+    for i = 1, LVL_WIDTH, 16 do
+        for j = 1, LVL_HEIGHT, 16 do
+            image:draw(i, j)
+        end
+    end
+
+    for i = 1, LVL_HEIGHT, 16 do
+        gfx.fillRoundRect(0, i, 16, 16, 5)
+    end
+
+    for i = 1, LVL_HEIGHT, 16 do
+        gfx.fillRoundRect(LVL_WIDTH - 16, i, 16, 16, 5)
+    end
+
+
+    for i = 1, LVL_WIDTH, 16 do
+        gfx.fillRoundRect(i, 0, 16, 16, 5)
+    end
+
+    for i = 1, LVL_WIDTH, 16 do
+        gfx.fillRoundRect(i, LVL_HEIGHT - 16, 16, 16, 5)
+    end
+
+    gfx.popContext()
+
+    local backgroundSprite = gfx.sprite.new(backgroundImage)
+    backgroundSprite:setCenter(0, 0)
+    backgroundSprite:setZIndex(-1)
+    backgroundSprite:add()
 
     self:moveTo(200, 120)
     self:setZIndex(-1)
@@ -30,7 +67,7 @@ function Level:init()
 end
 
 function Level:spawnEnemy()
-    if self.cashEnemy:getCountEnemy() >= 5 then
+    if self.cashEnemy:getCountEnemy() >= 35 then
         return
     end
 
