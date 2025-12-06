@@ -27,7 +27,7 @@ function Level:init()
     local backgroundImage = gfx.image.new(LVL_WIDTH, LVL_HEIGHT)
 
     gfx.pushContext(backgroundImage)
-    
+
     for i = 1, LVL_WIDTH, 16 do
         for j = 1, LVL_HEIGHT, 16 do
             image:draw(i, j)
