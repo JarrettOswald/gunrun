@@ -30,22 +30,24 @@ function Player:init()
     self:add()
 end
 
-local function run(self, angle)
-    local rad = math.rad(angle - 90)
-
-    local xd = math.cos(rad) * MOVE_SPEED
-    local yd = math.sin(rad) * MOVE_SPEED
-
-    local newX = self.x + xd
-    local newY = self.y + yd
-
-    newX = math.max(PLAYER_WIDTH / 2, math.min(SCREEN_WIDTH - PLAYER_WIDTH / 2, newX))
-    newY = math.max(PLAYER_HEIGHT / 2, math.min(SCREEN_HEIGHT - PLAYER_HEIGHT / 2, newY))
-
+local function rotationSprite(self, angle)
     local scaleX = (angle > 0 and angle < 180) and -1 or 1
-    self:setScale(scaleX, 1)
+    if self._lastScaleX ~= scaleX then
+        self:setScale(scaleX, 1)
+        self._lastScaleX = scaleX
+    end
+end
 
-    self:moveTo(newX, newY)
+local function run(self, angle)
+    local arc = geom.arc.new(self.x, self.y, MOVE_SPEED, angle, angle)
+    local point = arc:pointOnArc(0)
+
+    rotationSprite(self, angle)
+
+    local clampedX = math.min(math.max(PLAYER_WIDTH / 2, point.x), SCREEN_WIDTH - PLAYER_WIDTH / 2)
+    local clampedY = math.min(math.max(PLAYER_HEIGHT / 2, point.y), SCREEN_HEIGHT - PLAYER_HEIGHT / 2)
+
+    self:moveTo(clampedX, clampedY)
 end
 
 local function findEnemies(self)

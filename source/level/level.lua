@@ -18,11 +18,12 @@ function Level:init()
     self:add()
 
     local image = gfx.image.new('image/level/background') or error("Failed to load image")
-
     self:setImage(image)
+    gfx.setBackgroundColor(gfx.kColorBlack)
+
     self:moveTo(200, 120)
     self:setZIndex(-1)
-    
+
     self.cashEnemy:getEnemy(400 / 4 * 1, 120, self.player)
     self.cashEnemy:getEnemy(400 / 4 * 2, 120, self.player)
     self.cashEnemy:getEnemy(400 / 4 * 3, 120, self.player)
