@@ -6,8 +6,6 @@ Level = {}
 
 class('Level').extends(gfx.sprite)
 
-local arc = geom.arc.new(200, 120, 120, 0, 360)
-
 local assetsTable = gfx.imagetable.new("image/level/assets") or error("nil imagetable")
 local LVL_HEIGHT = 800
 local LVL_WIDTH = 600
@@ -34,23 +32,6 @@ function Level:init()
         end
     end
 
-    for i = 1, LVL_HEIGHT, 16 do
-        gfx.fillRoundRect(0, i, 16, 16, 5)
-    end
-
-    for i = 1, LVL_HEIGHT, 16 do
-        gfx.fillRoundRect(LVL_WIDTH - 16, i, 16, 16, 5)
-    end
-
-
-    for i = 1, LVL_WIDTH, 16 do
-        gfx.fillRoundRect(i, 0, 16, 16, 5)
-    end
-
-    for i = 1, LVL_WIDTH, 16 do
-        gfx.fillRoundRect(i, LVL_HEIGHT - 16, 16, 16, 5)
-    end
-
     gfx.popContext()
 
     local backgroundSprite = gfx.sprite.new(backgroundImage)
@@ -67,6 +48,8 @@ function Level:init()
 end
 
 function Level:spawnEnemy()
+    local arc = geom.arc.new(self.player.x, self.player.y, 120, 0, 360)
+
     if self.cashEnemy:getCountEnemy() >= 35 then
         return
     end

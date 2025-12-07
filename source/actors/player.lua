@@ -7,10 +7,6 @@ Player = {}
 
 class('Player').extends(gfx.sprite)
 
-local PLAYER_WIDTH = 8
-local PLAYER_HEIGHT = 16
-local SCREEN_WIDTH = 400
-local SCREEN_HEIGHT = 240
 local MOVE_SPEED = 3
 local SEARCH_RADIUS = 50
 
@@ -26,7 +22,7 @@ function Player:init()
     local image = gfx.image.new('image/player')
     self:setImage(image)
 
-    self:moveTo(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    self:moveTo(400, 300)
     self:add()
 end
 
@@ -38,13 +34,17 @@ local function rotationSprite(self, angle)
     end
 end
 
-local function run(self, angle)
+local function run(self)
+    local angle = pd.getCrankPosition()
+    rotationSprite(self, angle)
+
     local arc = geom.arc.new(self.x, self.y, MOVE_SPEED, angle, angle)
     local point = arc:pointOnArc(0)
 
-    rotationSprite(self, angle)
+    local x = math.max(0, math.min(600, point.x))
+    local y = math.max(0, math.min(800, point.y))
 
-    self:moveTo(point.x, point.y)
+    self:moveTo(x, y)
 end
 
 local function findEnemies(self)
@@ -114,7 +114,8 @@ end
 
 local function fire(self)
     if self.selectEnemy then
-        self.gun:fire(self.selectEnemy)
+        local point = geom.point.new(self.selectEnemy.x, self.selectEnemy.y)
+        self.gun:fire(point)
     end
 end
 
@@ -123,9 +124,7 @@ local function moveShield(self)
 end
 
 function Player:update()
-    local angle = pd.getCrankPosition()
-
-    run(self, angle)
+    run(self)
     handleFocus(self)
     selectClosestTarget(self)
     handleInput(self)

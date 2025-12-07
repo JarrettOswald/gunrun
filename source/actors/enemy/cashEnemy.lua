@@ -6,6 +6,8 @@ CashEnemy = {}
 
 class("CashEnemy").extends(gfx.sprite)
 
+local DISTANCE = 30
+
 function CashEnemy:init(player)
     self.player = player
     self.cashEnemy = {}
@@ -52,8 +54,8 @@ function CashEnemy:controlEnemy()
 
             local distance = geom.distanceToPoint(enemyA.x, enemyA.y, enemyB.x, enemyB.y)
 
-            if distance < 20 and distance > 0 then
-                local overlap = 20 - distance
+            if distance < DISTANCE and distance > 0 then
+                local overlap = DISTANCE - distance
                 local offsetX = (dx / distance) * (overlap / 2)
                 local offsetY = (dy / distance) * (overlap / 2)
 
