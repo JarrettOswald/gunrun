@@ -27,12 +27,12 @@ local function goToActor(self)
     end
 end
 
-function Enemy:init(x, y, player)
-    self.number = math.random(1, 999999)
+function Enemy:init(x, y, player, cashEnemy)
     self.health = 100
     self.player = player
+    self.cashEnemy = cashEnemy
 
-    self:setImage(enemyTable:getImage(1))enemyTable:getImage(1)
+    self:setImage(enemyTable:getImage(1))
     self:setCollideRect(0, 0, ENEMY_WIDTH, ENEMY_HEIGHT)
     self:setTag(TAGS.EMENY)
     self:moveTo(x, y)
@@ -47,7 +47,7 @@ function Enemy:damage(damageAmount)
 
     self.health = self.health - damageAmount
     if self.health <= 0 then
-        self:remove()
+        self.cashEnemy:removeEnemy(self)
     end
 end
 

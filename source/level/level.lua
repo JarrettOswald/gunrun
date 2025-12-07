@@ -10,11 +10,12 @@ local assetsTable = gfx.imagetable.new("image/level/assets") or error("nil image
 local LVL_HEIGHT = 800
 local LVL_WIDTH = 600
 
+local SPAWN_INTERVAL = 200
+
 function Level:init()
     self.player = Player()
     self.cashEnemy = CashEnemy(self.player)
     self.lastSpawnTime = 10
-    self.spawnInterval = 200
     self.camera = Camera(self.player)
     self:add()
 
@@ -42,21 +43,21 @@ function Level:init()
     self:moveTo(200, 120)
     self:setZIndex(-1)
 
-    self.cashEnemy:getEnemy(400 / 4 * 1, 120, self.player)
-    self.cashEnemy:getEnemy(400 / 4 * 2, 120, self.player)
-    self.cashEnemy:getEnemy(400 / 4 * 3, 120, self.player)
+    self.cashEnemy:createEnemy(400 / 4 * 1, 120)
+    self.cashEnemy:createEnemy(400 / 4 * 2, 120)
+    self.cashEnemy:createEnemy(400 / 4 * 3, 120)
 end
 
 function Level:spawnEnemy()
+    -- if self.cashEnemy:getCountEnemy() >= 35 then
+    -- return
+    -- end
+
     local arc = geom.arc.new(self.player.x, self.player.y, 120, 0, 360)
 
-    if self.cashEnemy:getCountEnemy() >= 35 then
-        return
-    end
-
-    if self.lastSpawnTime + self.spawnInterval < pd.getCurrentTimeMilliseconds() then
+    if self.lastSpawnTime + SPAWN_INTERVAL < pd.getCurrentTimeMilliseconds() then
         local point = arc:pointOnArc(math.random(0, math.floor(arc:length())))
-        self.cashEnemy:getEnemy(point.x, point.y)
+        self.cashEnemy:createEnemy(point.x, point.y)
         self.lastSpawnTime = pd.getCurrentTimeMilliseconds()
     end
 end

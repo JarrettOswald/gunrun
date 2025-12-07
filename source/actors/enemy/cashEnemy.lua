@@ -1,66 +1,103 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
-local geom <const> = playdate.geometry
+
+-- Локализируем глобальные функции для скорости
+local sqrt = math.sqrt
 
 CashEnemy = {}
-
 class("CashEnemy").extends(gfx.sprite)
 
-local DISTANCE = 30
+local DISTANCE = 25
+local DISTANCE_SQ = DISTANCE * DISTANCE
+
+local activeEnemies = {}
 
 function CashEnemy:init(player)
     self.player = player
-    self.cashEnemy = {}
     self.enemyCount = 0
+    self.lastEnemyCount = -1
+    
     self.counterSptrite = gfx.sprite.new()
-
+    self.counterSptrite:setZIndex(1000)
+    self.counterSptrite:setIgnoresDrawOffset(true)
+    self.counterSptrite:moveTo(50, 50)
+    self.counterSptrite:add()
+    
     self:add()
 end
 
-local function displayCountEnemy(self)
-    local imgage = gfx.image.new(100, 20)
-    gfx.pushContext(imgage)
-    gfx.drawText("Enemies: " .. tostring(self.enemyCount), 5, 5)
-    gfx.popContext()
-    self.counterSptrite:setImage(imgage)
-    self.counterSptrite:moveTo(50, 50)
-    self.counterSptrite:setZIndex(1000)
-    self.counterSptrite:add()
+function CashEnemy:createEnemy(x, y)
+    local enemy = Enemy(x, y, self.player, self)
+    table.insert(activeEnemies, enemy)
+    self.enemyCount = #activeEnemies
+    
+    return enemy
 end
 
-function CashEnemy:getEnemy(x, y)
-    return Enemy(x, y, self.player)
-end
-
-function CashEnemy:controlEnemy()
-    local sprites = gfx.sprite.getAllSprites()
-    local enemies = {}
-
-    for _, value in ipairs(sprites) do
-        if value:getTag() == TAGS.EMENY then
-            table.insert(enemies, value)
+function CashEnemy:removeEnemy(enemy)
+    for i = 1, #activeEnemies do
+        if activeEnemies[i] == enemy then
+            activeEnemies[i] = activeEnemies[#activeEnemies]
+            activeEnemies[#activeEnemies] = nil
+            break
         end
     end
+    
+    enemy:remove()
+    self.enemyCount = #activeEnemies
+end
 
-    self.enemyCount = #enemies
+local function updateCounterDisplay(self)
+    if self.enemyCount == self.lastEnemyCount then
+        return
+    end
 
-    for i = 1, #enemies - 1, 1 do
+    local image = gfx.image.new(100, 20)
+    gfx.pushContext(image)
+        gfx.setColor(gfx.kColorWhite)
+        gfx.fillRoundRect(0, 0, 100, 20, 5)
+        gfx.drawText("Enemies: " .. tostring(self.enemyCount), 5, 5)
+    gfx.popContext()
+    
+    self.counterSptrite:setImage(image)
+    self.lastEnemyCount = self.enemyCount
+end
+
+local function controlEnemy(self)
+
+    local enemies = activeEnemies
+    local count = #enemies
+    
+    if count < 2 then return end
+
+    for i = 1, count - 1 do
         local enemyA = enemies[i]
-        for j = i + 1, #enemies, 1 do
+        local ax, ay = enemyA.x, enemyA.y
+
+        for j = i + 1, count do
             local enemyB = enemies[j]
+            local bx, by = enemyB.x, enemyB.y
+            
+            local dx = bx - ax
+            local dy = by - ay
+            
+            local distSq = dx*dx + dy*dy
 
-            local dx = enemyB.x - enemyA.x
-            local dy = enemyB.y - enemyA.y
+            if distSq < DISTANCE_SQ and distSq > 0 then
 
-            local distance = geom.distanceToPoint(enemyA.x, enemyA.y, enemyB.x, enemyB.y)
-
-            if distance < DISTANCE and distance > 0 then
+                local distance = sqrt(distSq)
+                
                 local overlap = DISTANCE - distance
-                local offsetX = (dx / distance) * (overlap / 2)
-                local offsetY = (dy / distance) * (overlap / 2)
 
-                enemyA:moveTo(enemyA.x - offsetX, enemyA.y - offsetY)
-                enemyB:moveTo(enemyB.x + offsetX, enemyB.y + offsetY)
+                local pushFactor = (overlap * 0.5) / distance
+                local moveX = dx * pushFactor
+                local moveY = dy * pushFactor
+
+                enemyA:moveTo(ax - moveX, ay - moveY)
+                enemyB:moveTo(bx + moveX, by + moveY)
+                
+                ax = ax - moveX
+                ay = ay - moveY
             end
         end
     end
@@ -71,6 +108,6 @@ function CashEnemy:getCountEnemy()
 end
 
 function CashEnemy:update()
-    displayCountEnemy(self)
-    self:controlEnemy()
+    updateCounterDisplay(self)
+    controlEnemy(self)
 end
