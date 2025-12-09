@@ -2,9 +2,9 @@ local pd <const> = playdate
 local gfx <const> = playdate.graphics
 local geom <const> = playdate.geometry
 
-Enemy = {}
+Spider = {}
 
-class("Enemy").extends(gfx.sprite)
+class("Spider").extends(gfx.sprite)
 
 local ENEMY_WIDTH <const> = 16
 local ENEMY_HEIGHT <const> = 16
@@ -27,7 +27,7 @@ local function goToActor(self)
     end
 end
 
-function Enemy:init(x, y, player, cashEnemy)
+function Spider:init(x, y, player, cashEnemy)
     self.health = 100
     self.player = player
     self.cashEnemy = cashEnemy
@@ -39,7 +39,7 @@ function Enemy:init(x, y, player, cashEnemy)
     self:add()
 end
 
-function Enemy:damage(damageAmount)
+function Spider:damage(damageAmount)
     self:setImageDrawMode(gfx.kDrawModeInverted)
     pd.timer.performAfterDelay(20, function()
         self:setImageDrawMode(gfx.kDrawModeCopy)
@@ -51,6 +51,6 @@ function Enemy:damage(damageAmount)
     end
 end
 
-function Enemy:update()
+function Spider:update()
     goToActor(self)
 end

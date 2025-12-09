@@ -5,7 +5,7 @@ import "CoreLibs/ui"
 
 import "actors/player"
 import "level/level"
-import "actors/enemy/enemy"
+import "actors/enemy/spider"
 import "actors/enemy/cashEnemy"
 import "guns/bullet"
 import "guns/gun"
