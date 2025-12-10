@@ -3,6 +3,7 @@ import "CoreLibs/animator"
 import "CoreLibs/graphics"
 import "CoreLibs/ui"
 
+import "actors/enemy/enemy"
 import "actors/player"
 import "level/level"
 import "actors/enemy/spider"
@@ -14,6 +15,7 @@ import "shields/shield"
 import "level/camera"
 import "config/config"
 import "config/sceneManager"
+
 
 local pd <const> = playdate
 local gfx <const> = playdate.graphics

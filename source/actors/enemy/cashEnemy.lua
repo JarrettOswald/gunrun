@@ -113,6 +113,14 @@ function CashEnemy:getCountEnemy()
     return self.enemyCount
 end
 
+function CashEnemy:createRandomEnemy(x, y)
+    if math.random() < 0.5 then
+        return self:createSpider(x, y)
+    else
+        return self:createSkeleton(x, y)
+    end
+end
+
 function CashEnemy:update()
     updateCounterDisplay(self)
     controlEnemy()

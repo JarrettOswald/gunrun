@@ -4,44 +4,34 @@ local geom <const> = playdate.geometry
 
 
 Skeleton = {}
-class("Skeleton").extends(gfx.sprite)
+class("Skeleton").extends(Enemy)
 
 local ENEMY_WIDTH <const> = 16
 local ENEMY_HEIGHT <const> = 16
-local MOVE_SPEED <const> = 1.5
 local FIRE_COOLDOWN <const> = 1500
 
 local skeletonTable = gfx.imagetable.new("image/enemy/enemy") or error("nil imagetable")
 
 function Skeleton:init(x, y, player, cashEnemy)
+    Skeleton.super.init(self, player, cashEnemy)
     self.health = 150
-    self.player = player
-    self.cashEnemy = cashEnemy
     self.lastFireTime = 0
+    self.moveSpeed = 1.5
 
     self:setImage(skeletonTable:getImage(1, 2))
-    self:setCollideRect(0, 0, ENEMY_WIDTH, ENEMY_HEIGHT)
-    self:setTag(TAGS.EMENY)
-    self:setGroups(TAGS.EMENY)
+    self:setCollideRect(2, 2, ENEMY_WIDTH - 4, ENEMY_HEIGHT - 4)
     self:moveTo(x, y)
     self:add()
 end
 
 local function shootToTarget(self)
-    local currentTime = pd.getCurrentTimeMilliseconds()
-    if currentTime - self.lastFireTime >= FIRE_COOLDOWN then
-        Bullet(self, self.player)
-        self.lastFireTime = currentTime
-    end
-end
-
-local function runToTarget(self)
-    local playerX, playerY = self.player.x, self.player.y
-    local distance = geom.distanceToPoint(self.x, self.y, playerX, playerY)
-    local line = geom.lineSegment.new(self.x, self.y, playerX, playerY)
-    if distance > 0 then
-        local point = line:pointOnLine(MOVE_SPEED)
-        self:moveTo(point.x, point.y)
+    local distanceToPlayer = geom.lineSegment.new(self.x, self.y, self.player.x, self.player.y):length()
+    if distanceToPlayer < 120 then
+        local currentTime = pd.getCurrentTimeMilliseconds()
+        if currentTime - self.lastFireTime >= FIRE_COOLDOWN then
+            Bullet(self, self.player)
+            self.lastFireTime = currentTime
+        end
     end
 end
 
@@ -66,7 +56,7 @@ function Skeleton:damage(damageAmount)
 end
 
 function Skeleton:update()
-    runToTarget(self)
+    self:runToTarget()
     rotation(self)
     shootToTarget(self)
 end

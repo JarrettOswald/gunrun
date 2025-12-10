@@ -4,38 +4,22 @@ local geom <const> = playdate.geometry
 
 Spider = {}
 
-class("Spider").extends(gfx.sprite)
+class("Spider").extends(Enemy)
 
 local ENEMY_WIDTH <const> = 16
 local ENEMY_HEIGHT <const> = 16
-local MOVE_SPEED <const> = 2
 
 local enemyTable = gfx.imagetable.new("image/enemy/enemy") or error("nil imagetable")
 
-local function goToActor(self)
-    if self.player then
-        local playerX, playerY = self.player.x, self.player.y
-        local enemyX, enemyY = self.x, self.y
-
-        local distance = geom.distanceToPoint(enemyX, enemyY, playerX, playerY)
-
-        if distance > 0 then
-            local dx, dy = playerX - enemyX, playerY - enemyY
-            dx, dy = dx / distance, dy / distance
-            self:moveTo(enemyX + dx * MOVE_SPEED, enemyY + dy * MOVE_SPEED)
-        end
-    end
-end
-
 function Spider:init(x, y, player, cashEnemy)
+    Skeleton.super.init(self, player, cashEnemy)
     self.health = 100
     self.player = player
     self.cashEnemy = cashEnemy
+    self.moveSpeed = 3
 
     self:setImage(enemyTable:getImage(1))
     self:setCollideRect(0, 0, ENEMY_WIDTH, ENEMY_HEIGHT)
-    self:setTag(TAGS.EMENY)
-    self:setGroups(TAGS.EMENY)
     self:moveTo(x, y)
     self:add()
 end
@@ -53,5 +37,5 @@ function Spider:damage(damageAmount)
 end
 
 function Spider:update()
-    goToActor(self)
+    self:runToTarget()
 end
