@@ -49,7 +49,7 @@ function Level:init()
 end
 
 function Level:spawnEnemy()
-    if self.cashEnemy:getCountEnemy() >= 45 then
+    if self.cashEnemy:getCountEnemy() >= 5 then
         return
     end
 
@@ -57,7 +57,7 @@ function Level:spawnEnemy()
 
     if self.lastSpawnTime + SPAWN_INTERVAL < pd.getCurrentTimeMilliseconds() then
         local point = arc:pointOnArc(math.random(0, math.floor(arc:length())))
-        self.cashEnemy:createSpider(point.x, point.y)
+        self.cashEnemy:createSkeleton(point.x, point.y)
         self.lastSpawnTime = pd.getCurrentTimeMilliseconds()
     end
 end

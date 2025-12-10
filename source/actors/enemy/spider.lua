@@ -35,6 +35,7 @@ function Spider:init(x, y, player, cashEnemy)
     self:setImage(enemyTable:getImage(1))
     self:setCollideRect(0, 0, ENEMY_WIDTH, ENEMY_HEIGHT)
     self:setTag(TAGS.EMENY)
+    self:setGroups(TAGS.EMENY)
     self:moveTo(x, y)
     self:add()
 end

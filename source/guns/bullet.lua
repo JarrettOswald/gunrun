@@ -2,10 +2,11 @@ local pd <const> = playdate
 local gfx <const> = playdate.graphics
 local geom <const> = playdate.geometry
 
-local SPEED <const> = 5
-
 Bullet = {}
+
 class('Bullet').extends(gfx.sprite)
+
+local SPEED <const> = 5
 
 local function initImage(self)
     local image = gfx.image.new(4, 4)
@@ -16,17 +17,14 @@ local function initImage(self)
 end
 
 local function handleBulletPath(self)
-    self.distanceCovered = self.distanceCovered + SPEED
-
-    local pointOnLine = self.lineToTarget:pointOnLine(self.distanceCovered)
-    local actualX, actualY, collisions, numberOfCollisions = self:moveWithCollisions(pointOnLine.x, pointOnLine.y)
+    local actualX, actualY, collisions, numberOfCollisions = self:moveWithCollisions(self.position.x, self.position.y)
 
     if numberOfCollisions > 0 then
         for i = 1, numberOfCollisions do
             local collision = collisions[i]
             local other = collision.other
 
-            if other:getTag() == TAGS.EMENY then
+            if other:getTag() == self.targetType then
                 other:damage(50)
                 self:remove()
                 return
@@ -34,28 +32,30 @@ local function handleBulletPath(self)
         end
     end
 
-    if self.distanceCovered >= self.lineToTarget:length() then
-        self:remove()
-    end
 end
 
-function Bullet:init(player, point)
-    self.player = player
-    self.lineToTarget = geom.lineSegment.new(player.x, player.y, point.x, point.y)
-    self.distanceCovered = 0
+function Bullet:init(gunner, target)
+    self.position = geom.vector2D.new(gunner.x, gunner.y)
+    self.targetPosition = geom.vector2D.new(target.x, target.y)
+
+    self.direction = (self.targetPosition - self.position):normalized() * SPEED
+
+    self.targetType = target:getTag()
+    self:setCollidesWithGroups(self.targetType)
+
+    self.gunner = gunner
 
     initImage(self)
 
     self:setCollideRect(0, 0, 4, 4)
     self:setTag(TAGS.BULLET)
-    self:moveTo(player.x, player.y)
+    self:moveTo(gunner.x, gunner.y)
     self:add()
 
-    pd.timer.performAfterDelay(2000, function()
-        self:remove()
-    end)
+    pd.timer.new(3000, function() self:remove() end)
 end
 
 function Bullet:update()
+    self.position = self.position + self.direction
     handleBulletPath(self)
 end

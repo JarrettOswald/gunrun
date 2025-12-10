@@ -34,6 +34,14 @@ function CashEnemy:createSpider(x, y)
     return enemy
 end
 
+function CashEnemy:createSkeleton(x, y)
+    local enemy = Skeleton(x, y, self.player, self)
+    table.insert(activeEnemies, enemy)
+    self.enemyCount = #activeEnemies
+
+    return enemy
+end
+
 function CashEnemy:removeEnemy(enemy)
     for i = 1, #activeEnemies do
         if activeEnemies[i] == enemy then
@@ -63,7 +71,7 @@ local function updateCounterDisplay(self)
     self.lastEnemyCount = self.enemyCount
 end
 
-local function controlEnemy(self)
+local function controlEnemy()
     local enemies = activeEnemies
     local count = #enemies
 
@@ -107,5 +115,5 @@ end
 
 function CashEnemy:update()
     updateCounterDisplay(self)
-    controlEnemy(self)
+    controlEnemy()
 end

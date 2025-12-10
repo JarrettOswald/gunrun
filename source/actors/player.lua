@@ -21,9 +21,16 @@ function Player:init()
 
     local image = gfx.image.new('image/player')
     self:setImage(image)
+    self:setCollideRect(0, 0, 16, 16)
+    self:setTag(TAGS.PLAYER)
+    self:setGroups(TAGS.PLAYER)
 
     self:moveTo(400, 300)
     self:add()
+end
+
+function Player:damage(damageAmount)
+    -- todo()
 end
 
 local function rotationSprite(self, angle)
@@ -114,7 +121,7 @@ end
 
 local function fire(self)
     if self.selectEnemy then
-        local point = geom.point.new(self.selectEnemy.x, self.selectEnemy.y)
+        local point = self.selectEnemy
         self.gun:fire(point)
     end
 end
