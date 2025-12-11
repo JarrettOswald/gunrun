@@ -47,7 +47,10 @@ local function run(self)
     local rad = math.rad(angle - 90)
     local direction = geom.vector2D.new(math.cos(rad), math.sin(rad)) * MOVE_SPEED
     local newPosition = geom.vector2D.new(self.x, self.y) + direction
-    self:moveTo(newPosition.x, newPosition.y)
+
+    local x = math.max(0, math.min(600, newPosition.x))
+    local y = math.max(0, math.min(800, newPosition.y))
+    self:moveTo(x, y)
 end
 
 local function findEnemies(self)

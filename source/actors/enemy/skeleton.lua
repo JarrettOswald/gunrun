@@ -8,7 +8,7 @@ class("Skeleton").extends(Enemy)
 
 local ENEMY_WIDTH <const> = 16
 local ENEMY_HEIGHT <const> = 16
-local FIRE_COOLDOWN <const> = 1500
+local FIRE_COOLDOWN <const> = 2000
 
 local skeletonTable = gfx.imagetable.new("image/enemy/enemy") or error("nil imagetable")
 
@@ -17,6 +17,7 @@ function Skeleton:init(x, y, player, cashEnemy)
     self.health = 150
     self.lastFireTime = 0
     self.moveSpeed = 1.5
+    self.bullet = Bullet()
 
     self:setImage(skeletonTable:getImage(1, 2))
     self:setCollideRect(2, 2, ENEMY_WIDTH - 4, ENEMY_HEIGHT - 4)
@@ -29,7 +30,7 @@ local function shootToTarget(self)
     if distanceToPlayer < 120 then
         local currentTime = pd.getCurrentTimeMilliseconds()
         if currentTime - self.lastFireTime >= FIRE_COOLDOWN then
-            Bullet(self, self.player)
+            self.bullet:setTargetAndGo(self, self.player)
             self.lastFireTime = currentTime
         end
     end
