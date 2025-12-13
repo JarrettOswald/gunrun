@@ -35,9 +35,9 @@ end
 
 local function rotationSprite(self, angle)
     local scaleX = (angle > 0 and angle < 180) and -1 or 1
-    if self._lastScaleX ~= scaleX then
+    if self.lastScaleX ~= scaleX then
         self:setScale(scaleX, 1)
-        self._lastScaleX = scaleX
+        self.lastScaleX = scaleX
     end
 end
 
@@ -45,11 +45,16 @@ local function run(self)
     local angle = pd.getCrankPosition()
     rotationSprite(self, angle)
     local rad = math.rad(angle - 90)
-    local direction = geom.vector2D.new(math.cos(rad), math.sin(rad)) * MOVE_SPEED
-    local newPosition = geom.vector2D.new(self.x, self.y) + direction
 
-    local x = math.max(0, math.min(600, newPosition.x))
-    local y = math.max(0, math.min(800, newPosition.y))
+    local dx = math.cos(rad) * MOVE_SPEED
+    local dy = math.sin(rad) * MOVE_SPEED
+
+    
+    local newX = self.x + dx
+    local newY = self.y + dy
+
+    local x = math.max(0, math.min(600, newX))
+    local y = math.max(0, math.min(800, newY))
     self:moveTo(x, y)
 end
 

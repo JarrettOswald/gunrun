@@ -26,10 +26,13 @@ function Skeleton:init(x, y, player, cashEnemy)
 end
 
 local function shootToTarget(self)
-    local distanceToPlayer = geom.lineSegment.new(self.x, self.y, self.player.x, self.player.y):length()
-    if distanceToPlayer < 120 then
+    local dx = self.player.x - self.x
+    local dy = self.player.y - self.y
+    local distSq = dx * dx + dy * dy
+    if distSq < 200 * 200 then
         local currentTime = pd.getCurrentTimeMilliseconds()
         if currentTime - self.lastFireTime >= FIRE_COOLDOWN then
+            print(currentTime - self.lastFireTime >= FIRE_COOLDOWN)
             self.bullet:setTargetAndGo(self, self.player)
             self.lastFireTime = currentTime
         end

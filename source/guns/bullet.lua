@@ -16,11 +16,23 @@ local function initImage(self)
     self:setImage(image)
 end
 
+local function toCash(self)
+    self:moveTo(-200, -200)
+    self.isCashed = true
+end
+
 local function handleBulletPath(self)
-    self.position = geom.vector2D.new(self.x, self.y)
-    self.newPosition = self.position + self.direction
+    self.position.x = self.x
+    self.position.y = self.y
+
+
+    self.newPosition.x = self.position.x
+    self.newPosition.y = self.position.y
+
+    self.newPosition:addVector(self.direction)
+
     local actualX, actualY, collisions, numberOfCollisions = self:moveWithCollisions(self.newPosition.x,
-    self.newPosition.y)
+        self.newPosition.y)
 
     if numberOfCollisions > 0 then
         for i = 1, numberOfCollisions do
@@ -28,8 +40,7 @@ local function handleBulletPath(self)
             local other = collision.other
             if other:getTag() == self.targetType then
                 other:damage(50)
-                self:moveTo(-1000, -1000)
-                self.isCashed = true
+                toCash(self)
                 return
             end
         end
@@ -42,6 +53,10 @@ function Bullet:init()
     self:setTag(TAGS.BULLET)
     self:add()
     self.isCashed = true
+
+    self.position = geom.vector2D.new(0, 0)
+    self.newPosition = geom.vector2D.new(0, 0)
+    self.direction = geom.vector2D.new(0, 0)
 end
 
 function Bullet:update()
@@ -57,14 +72,12 @@ function Bullet:setTargetAndGo(gunner, target)
     self.targetType = target:getTag()
     self:setCollidesWithGroups(self.targetType)
 
-    local start = geom.vector2D.new(gunner.x, gunner.y)
-    local targetPos = geom.vector2D.new(target.x, target.y)
-    self.direction = (targetPos - start):normalized() * SPEED
+    ---@diagnostic disable-next-line: inject-field
+    self.direction.x = target.x - gunner.x
+    ---@diagnostic disable-next-line: inject-field
+    self.direction.y = target.y - gunner.y
 
-    pd.timer.performAfterDelay(2000, function()
-        if not self.isCashed then
-            self:moveTo(-1000, -1000)
-            self.isCashed = true
-        end
-    end)
+    self.direction:normalize()
+
+    self.direction:scale(SPEED)
 end

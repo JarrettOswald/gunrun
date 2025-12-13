@@ -39,13 +39,10 @@ function Level:init()
     backgroundSprite:setCenter(0, 0)
     backgroundSprite:setZIndex(-1)
     backgroundSprite:add()
+    
 
     self:moveTo(200, 120)
     self:setZIndex(-1)
-
-    self.cashEnemy:createSpider(400 / 4 * 1, 120)
-    self.cashEnemy:createSpider(400 / 4 * 2, 120)
-    self.cashEnemy:createSpider(400 / 4 * 3, 120)
 end
 
 function Level:spawnEnemy()
@@ -53,15 +50,13 @@ function Level:spawnEnemy()
         return
     end
 
-    local arc = geom.arc.new(self.player.x, self.player.y, 120, 0, 360)
-
     if self.lastSpawnTime + SPAWN_INTERVAL < pd.getCurrentTimeMilliseconds() then
-        local point = arc:pointOnArc(math.random(0, math.floor(arc:length())))
-        self.cashEnemy:createRandomEnemy(point.x, point.y)
+        self.cashEnemy:createSkeleton(300, 400)
         self.lastSpawnTime = pd.getCurrentTimeMilliseconds()
     end
 end
 
 function Level:update()
+    self.cashEnemy:update()
     self:spawnEnemy()
 end

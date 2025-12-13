@@ -15,10 +15,12 @@ function Enemy:init(player, cashEnemy)
 end
 
 function Enemy:runToTarget()
-    local playerX, playerY = self.player.x, self.player.y
-    local position = geom.vector2D.new(self.x, self.y)
-    local targetVector = geom.vector2D.new(playerX, playerY)
-    local direction = (targetVector - position):normalized() * self.moveSpeed
-    local newPosition = position + direction
-    self:moveTo(newPosition.x, newPosition.y)
+    local dx = self.player.x - self.x
+    local dy = self.player.y - self.y
+    local distance = math.sqrt(dx * dx + dy * dy)
+
+    if distance > 1 then
+        local ratio = self.moveSpeed / distance
+        self:moveTo(self.x + dx * ratio, self.y + dy * ratio)
+    end
 end
