@@ -19,7 +19,7 @@ function Gun:fire(point)
 
     local currentTime = pd.getCurrentTimeMilliseconds()
     if currentTime - self.lastFireTime >= FIRE_COOLDOWN then
-        self.bullet:setTargetAndGo(self.player, point)
+        self.bullet:setTargetAndFire(self.player, point)
         self.lastFireTime = currentTime
     end
 end

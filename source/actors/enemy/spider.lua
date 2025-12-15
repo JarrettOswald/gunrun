@@ -26,6 +26,11 @@ end
 
 function Spider:damage(damageAmount)
     self:setImageDrawMode(gfx.kDrawModeInverted)
+
+    pd.timer.performAfterDelay(20, function()
+        self:setImageDrawMode(gfx.kDrawModeCopy)
+    end)
+
     self.health = self.health - damageAmount
     if self.health <= 0 then
         self.cashEnemy:removeEnemy(self)

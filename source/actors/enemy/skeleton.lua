@@ -33,7 +33,7 @@ local function shootToTarget(self)
         local currentTime = pd.getCurrentTimeMilliseconds()
         if currentTime - self.lastFireTime >= FIRE_COOLDOWN then
             print(currentTime - self.lastFireTime >= FIRE_COOLDOWN)
-            self.bullet:setTargetAndGo(self, self.player)
+            self.bullet:setTargetAndFire(self, self.player)
             self.lastFireTime = currentTime
         end
     end

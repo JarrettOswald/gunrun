@@ -49,12 +49,12 @@ local function run(self)
     local dx = math.cos(rad) * MOVE_SPEED
     local dy = math.sin(rad) * MOVE_SPEED
 
-    
+
     local newX = self.x + dx
     local newY = self.y + dy
 
-    local x = math.max(0, math.min(600, newX))
-    local y = math.max(0, math.min(800, newY))
+    local x = math.max(0, math.min(400, newX))
+    local y = math.max(0, math.min(400, newY))
     self:moveTo(x, y)
 end
 

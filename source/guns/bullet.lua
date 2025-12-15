@@ -25,7 +25,6 @@ local function handleBulletPath(self)
     self.position.x = self.x
     self.position.y = self.y
 
-
     self.newPosition.x = self.position.x
     self.newPosition.y = self.position.y
 
@@ -45,6 +44,10 @@ local function handleBulletPath(self)
             end
         end
     end
+
+    if self.lastFireTime + self.toCashTimer > pd.getCurrentTimeMilliseconds() then
+        toCash(self)
+    end
 end
 
 function Bullet:init()
@@ -52,7 +55,10 @@ function Bullet:init()
     self:setCollideRect(0, 0, 4, 4)
     self:setTag(TAGS.BULLET)
     self:add()
+
     self.isCashed = true
+    self.lastFireTime = 0
+    self.toCashTimer = 2000
 
     self.position = geom.vector2D.new(0, 0)
     self.newPosition = geom.vector2D.new(0, 0)
@@ -65,7 +71,9 @@ function Bullet:update()
     end
 end
 
-function Bullet:setTargetAndGo(gunner, target)
+function Bullet:setTargetAndFire(gunner, target)
+    local lastFireTime = pd.getCurrentTimeMilliseconds()
+
     self:moveTo(gunner.x, gunner.y)
     self.isCashed = false
     self.gunner = gunner

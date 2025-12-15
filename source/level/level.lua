@@ -6,9 +6,9 @@ Level = {}
 
 class('Level').extends(gfx.sprite)
 
-local assetsTable = gfx.imagetable.new("image/level/assets") or error("nil imagetable")
-local LVL_HEIGHT = 800
-local LVL_WIDTH = 600
+local assetsTable = gfx.imagetable.new("image/level/tiles") or error("nil imagetable")
+local LVL_HEIGHT = 400
+local LVL_WIDTH = 400
 
 local SPAWN_INTERVAL = 200
 
@@ -22,7 +22,7 @@ function Level:init()
     gfx.setBackgroundColor(gfx.kColorBlack)
     gfx.clear()
 
-    local image = assetsTable:getImage(1, 2) or error("Failed to load image")
+    local image = assetsTable:getImage(15, 2) or error("Failed to load image")
     local backgroundImage = gfx.image.new(LVL_WIDTH, LVL_HEIGHT)
 
     gfx.pushContext(backgroundImage)
@@ -39,7 +39,7 @@ function Level:init()
     backgroundSprite:setCenter(0, 0)
     backgroundSprite:setZIndex(-1)
     backgroundSprite:add()
-    
+
 
     self:moveTo(200, 120)
     self:setZIndex(-1)
@@ -51,7 +51,7 @@ function Level:spawnEnemy()
     end
 
     if self.lastSpawnTime + SPAWN_INTERVAL < pd.getCurrentTimeMilliseconds() then
-        self.cashEnemy:createSkeleton(300, 400)
+        self.cashEnemy:createSpider(300, 400)
         self.lastSpawnTime = pd.getCurrentTimeMilliseconds()
     end
 end
