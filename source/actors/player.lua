@@ -7,8 +7,15 @@ Player = {}
 
 class('Player').extends(gfx.sprite)
 
-local MOVE_SPEED = 4
+local MOVE_SPEED = 3
 local SEARCH_RADIUS = 50
+
+
+local function info(text)
+    local sprite = gfx.sprite.spriteWithText("hello", 40, 20)
+    sprite:setImageDrawMode(gfx.kDrawModeInverted)
+    sprite:add()
+end
 
 function Player:init()
     self.lastFireTime = 0
@@ -18,6 +25,8 @@ function Player:init()
     self.selectEnemy = nil
     self.lastEnemySearchTime = 0
     self.enemySearchInterval = 200
+    self.health = 100
+    self.velocity = geom.vector2D.new(0, 0)
 
     local image = gfx.image.new('image/player')
     self:setImage(image)
@@ -25,12 +34,18 @@ function Player:init()
     self:setTag(TAGS.PLAYER)
     self:setGroups(TAGS.PLAYER)
 
-    self:moveTo(400, 300)
+    self:moveTo(40, 40)
     self:add()
+    info()
 end
 
 function Player:damage(damageAmount)
-    -- todo()
+    self:setImageDrawMode(gfx.kDrawModeInverted)
+    pd.timer.performAfterDelay(20, function()
+        self:setImageDrawMode(gfx.kDrawModeCopy)
+    end)
+
+    self.health -= damageAmount
 end
 
 local function rotationSprite(self, angle)
@@ -44,17 +59,20 @@ end
 local function run(self)
     local angle = pd.getCrankPosition()
     rotationSprite(self, angle)
+
     local rad = math.rad(angle - 90)
 
     local dx = math.cos(rad) * MOVE_SPEED
     local dy = math.sin(rad) * MOVE_SPEED
 
+    self.velocity.x = dx
+    self.velocity.y = dy
 
     local newX = self.x + dx
     local newY = self.y + dy
 
-    local x = math.max(0, math.min(400, newX))
-    local y = math.max(0, math.min(400, newY))
+    local x = math.max(0, math.min(360, newX))
+    local y = math.max(0, math.min(360, newY))
     self:moveTo(x, y)
 end
 

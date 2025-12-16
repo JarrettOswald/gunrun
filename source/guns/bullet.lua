@@ -57,7 +57,7 @@ function Bullet:init()
     self:add()
 
     self.isCashed = true
-    self.lastFireTime = 0
+    self.lastFireTime = pd.getCurrentTimeMilliseconds()
     self.toCashTimer = 2000
 
     self.position = geom.vector2D.new(0, 0)
@@ -71,19 +71,17 @@ function Bullet:update()
     end
 end
 
-function Bullet:setTargetAndFire(gunner, target)
-    local lastFireTime = pd.getCurrentTimeMilliseconds()
-
+function Bullet:setTargetAndFire(gunner, x, y, target)
     self:moveTo(gunner.x, gunner.y)
     self.isCashed = false
     self.gunner = gunner
-    self.targetType = target:getTag()
-    self:setCollidesWithGroups(self.targetType)
+    self.targetType = target
+    self:setCollidesWithGroups(target)
 
     ---@diagnostic disable-next-line: inject-field
-    self.direction.x = target.x - gunner.x
+    self.direction.x = x - gunner.x
     ---@diagnostic disable-next-line: inject-field
-    self.direction.y = target.y - gunner.y
+    self.direction.y = y - gunner.y
 
     self.direction:normalize()
 

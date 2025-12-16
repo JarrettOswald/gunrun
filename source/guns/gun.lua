@@ -12,14 +12,10 @@ function Gun:init(player)
     self.bullet = Bullet()
 end
 
-function Gun:fire(point)
-    if self.bullet.isCashed ~= true then
-        return
-    end
-
+function Gun:fire(enemy)
     local currentTime = pd.getCurrentTimeMilliseconds()
     if currentTime - self.lastFireTime >= FIRE_COOLDOWN then
-        self.bullet:setTargetAndFire(self.player, point)
+        self.bullet:setTargetAndFire(self.player, enemy.x, enemy.y, TAGS.EMENY)
         self.lastFireTime = currentTime
     end
 end

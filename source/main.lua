@@ -3,6 +3,7 @@ import "CoreLibs/animator"
 import "CoreLibs/graphics"
 import "CoreLibs/ui"
 
+import "level/builderLvl"
 import "config/config"
 import "actors/enemy/enemy"
 import "actors/player"
@@ -22,7 +23,6 @@ local gfx <const> = playdate.graphics
 SCENE_MANAGER = SceneManager()
 
 SCENE_MANAGER:switchScene(Level)
-
 
 local function memUsage()
     gfx.setDrawOffset(0, 0)

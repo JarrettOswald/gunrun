@@ -26,17 +26,25 @@ function Skeleton:init(x, y, player, cashEnemy)
 end
 
 local function shootToTarget(self)
-    local dx = self.player.x - self.x
-    local dy = self.player.y - self.y
-    local distSq = dx * dx + dy * dy
-    if distSq < 200 * 200 then
-        local currentTime = pd.getCurrentTimeMilliseconds()
-        if currentTime - self.lastFireTime >= FIRE_COOLDOWN then
-            print(currentTime - self.lastFireTime >= FIRE_COOLDOWN)
-            self.bullet:setTargetAndFire(self, self.player)
-            self.lastFireTime = currentTime
-        end
+    if pd.getCurrentTimeMilliseconds() - self.lastFireTime < FIRE_COOLDOWN then
+        return
     end
+
+    local dist = geom.distanceToPoint(self.x, self.y, self.player.x, self.player.y)
+
+    if dist > 200 then
+        return
+    end
+
+    local currentTime = pd.getCurrentTimeMilliseconds()
+
+    self.bullet:setTargetAndFire(
+        self,
+        self.player.x + self.player.velocity.x * math.random() * dist,
+        self.player.y + self.player.velocity.y * math.random() * dist,
+        TAGS.PLAYER
+    )
+    self.lastFireTime = currentTime
 end
 
 local function rotation(self)
